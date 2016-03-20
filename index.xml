@@ -6,8 +6,210 @@
     <description>Recent content on Sam Doshi</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Sun, 20 Mar 2016 14:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 20 Mar 2016 16:00:00 +0000</lastBuildDate>
     <atom:link href="http://samdoshi.com/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>An introduction to Git submodules</title>
+      <link>http://samdoshi.com/post/2016/03/git-submodules/</link>
+      <pubDate>Sun, 20 Mar 2016 16:00:00 +0000</pubDate>
+      
+      <guid>http://samdoshi.com/post/2016/03/git-submodules/</guid>
+      <description>
+
+&lt;p&gt;Over on the Monome online community &lt;a href=&#34;http://llllllll.co/t/github-reorganization/2698?u=sam&#34;&gt;lines&lt;/a&gt;, we&amp;rsquo;ve been discussing breaking up the monolithic git repository used for the &lt;a href=&#34;http://monome.org/modular/&#34;&gt;Eurorack&lt;/a&gt; modules&amp;rsquo; &lt;a href=&#34;https://github.com/tehn/mod&#34;&gt;firmware&lt;/a&gt;. This is just a brief overview of Git submodules to see if they are a good fit for us.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;A submodule allows you to keep another Git repository in a subdirectory of your repository. The other repository has its own history, which does not interfere with the history of the current repository. &lt;strong&gt;This can be used to have external dependencies such as third party libraries for example.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;&lt;a href=&#34;https://git-scm.com/docs/git-submodule&#34;&gt;The Git submodule man page&lt;/a&gt;&lt;/em&gt; &lt;em&gt;(emphasis mine)&lt;/em&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Let&amp;rsquo;s work through a simple example to see how it works&amp;hellip;&lt;/p&gt;
+
+&lt;h2 id=&#34;setup:7a99bbb2a2f52bb257bf4e5f6f41c3fe&#34;&gt;Setup&lt;/h2&gt;
+
+&lt;p&gt;First, we&amp;rsquo;ll make our shared library repo &lt;code&gt;lib&lt;/code&gt; and add some commits.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span&gt;&lt;/span&gt;mkdir lib
+&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; lib
+git init
+touch a
+git add a
+git commit -m &lt;span class=&#34;s2&#34;&gt;&amp;quot;added a&amp;quot;&lt;/span&gt;
+git mv a b
+git commit -m &lt;span class=&#34;s2&#34;&gt;&amp;quot;mv a b&amp;quot;&lt;/span&gt;
+&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; ..
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Now, let&amp;rsquo;s create a repo &lt;code&gt;repo1&lt;/code&gt; (that will use the library via a submodule).&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span&gt;&lt;/span&gt;mkdir repo1
+&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; repo1
+git init
+&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; ..
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This gives us the following files (via &lt;code&gt;tree&lt;/code&gt;):&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;.
+├── lib
+│   └── b
+└── repo1
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Let&amp;rsquo;s add the submodule to &lt;code&gt;repo1&lt;/code&gt; as the directory &lt;code&gt;common&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; repo1
+git submodule add ../lib common
+git commit -m &lt;span class=&#34;s2&#34;&gt;&amp;quot;added submodule&amp;quot;&lt;/span&gt;
+&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; ..
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;And again, the output of &lt;code&gt;tree&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;.
+├── lib
+│   └── b
+└── repo1
+    └── common
+        └── b
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Now we have a repo &lt;code&gt;repo1&lt;/code&gt; that contains a submodule in the directory &lt;code&gt;common&lt;/code&gt; from repo &lt;code&gt;lib&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;making-changes-to-lib:7a99bbb2a2f52bb257bf4e5f6f41c3fe&#34;&gt;Making changes to &lt;code&gt;lib&lt;/code&gt;&lt;/h2&gt;
+
+&lt;p&gt;Let&amp;rsquo;s make a change to &lt;code&gt;lib&lt;/code&gt; to demonstrate what submodules allow us to do.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; lib
+git mv b c
+git commit -m &lt;span class=&#34;s2&#34;&gt;&amp;quot;mv b c&amp;quot;&lt;/span&gt;
+&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; ..
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Again, consider the output of &lt;code&gt;tree&lt;/code&gt;. Notice how &lt;code&gt;repo1/common&lt;/code&gt; still contains &lt;code&gt;b&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;.
+├── lib
+│   └── c
+└── repo1
+    └── common
+        └── b
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Let&amp;rsquo;s clone &lt;code&gt;repo1&lt;/code&gt; to &lt;code&gt;repo1_clone&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span&gt;&lt;/span&gt;git clone repo1 repo1_clone
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;That gives us:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;.
+├── lib
+│   └── c
+├── repo1
+│   └── common
+│       └── b
+└── repo1_clone
+    └── common
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Hmm, why hasn&amp;rsquo;t &lt;code&gt;repo1_clone/common&lt;/code&gt; got any files in it?&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; repo1_clone
+git submodule update --init
+&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; ..
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;That&amp;rsquo;s better&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:7a99bbb2a2f52bb257bf4e5f6f41c3fe:fn-recursive&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:7a99bbb2a2f52bb257bf4e5f6f41c3fe:fn-recursive&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;.
+├── lib
+│   └── c
+├── repo1
+│   └── common
+│       └── b
+└── repo1_clone
+    └── common
+        └── b
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The important thing to note is that both &lt;code&gt;repo1&lt;/code&gt; and &lt;code&gt;repo1_clone&lt;/code&gt; still contain &lt;code&gt;b&lt;/code&gt; rather than &lt;code&gt;c&lt;/code&gt;. This is because Git tracks a particular commit for the submodule rather than a branch or &lt;code&gt;HEAD&lt;/code&gt;. You need to explicitly update the parent repo to track a new commit. This is great as it means changes to the upstream repo of the submodule are not forced upon us.&lt;/p&gt;
+
+&lt;p&gt;The output of &lt;code&gt;git log --pretty=&amp;quot;format:%H %s&amp;quot;&lt;/code&gt; in the &lt;code&gt;lib&lt;/code&gt; repo is:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;1e5717c64e1150ca1da08521a24d8469c2bdde00 mv b c
+86a5b293fa8f860730cd96c11b29b5f03fc2a60e mv a b
+3c163ca8fcf336907e1b2a121f25bd550a71e5e3 added a
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The output of &lt;code&gt;git submodule status&lt;/code&gt; in &lt;code&gt;repo1&lt;/code&gt; is:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;86a5b293fa8f860730cd96c11b29b5f03fc2a60e common (heads/master)
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Notice how the commit SHA for the &lt;code&gt;common&lt;/code&gt; entry in &lt;code&gt;git submodule status&lt;/code&gt; matches the second entry in the log for &lt;code&gt;lib&lt;/code&gt;. This shouldn&amp;rsquo;t come as a surprise, as our submodule hasn&amp;rsquo;t been updated to the latest changes in &lt;code&gt;lib&lt;/code&gt; yet.&lt;/p&gt;
+
+&lt;h2 id=&#34;updating-submodules:7a99bbb2a2f52bb257bf4e5f6f41c3fe&#34;&gt;Updating submodules&lt;/h2&gt;
+
+&lt;p&gt;Let&amp;rsquo;s update &lt;code&gt;repo1&lt;/code&gt; to incorporate the changes made to &lt;code&gt;lib&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; repo1/common
+git pull
+&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; ..
+git status
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;On branch master
+Changes not staged for commit:
+  (use &amp;quot;git add &amp;lt;file&amp;gt;...&amp;quot; to update what will be committed)
+  (use &amp;quot;git checkout -- &amp;lt;file&amp;gt;...&amp;quot; to discard changes in working directory)
+
+	modified:   common (new commits)
+
+no changes added to commit (use &amp;quot;git add&amp;quot; and/or &amp;quot;git commit -a&amp;quot;)
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The output of &lt;code&gt;git status&lt;/code&gt; is telling us that we have modified &lt;code&gt;common&lt;/code&gt;, we need to commit those changes to &lt;code&gt;repo1&lt;/code&gt;&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:7a99bbb2a2f52bb257bf4e5f6f41c3fe:fn-change&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:7a99bbb2a2f52bb257bf4e5f6f41c3fe:fn-change&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span&gt;&lt;/span&gt;git add common
+git commit -m &lt;span class=&#34;s2&#34;&gt;&amp;quot;update common&amp;quot;&lt;/span&gt;
+&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; ..
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Now the output of &lt;code&gt;tree&lt;/code&gt; is:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;.
+├── lib
+│   └── c
+├── repo1
+│   └── common
+│       └── c
+└── repo1_clone
+    └── common
+        └── b
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The only thing left to do is to update &lt;code&gt;repo1_clone&lt;/code&gt; to reflect those changes:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; repo1_clone
+git pull
+git submodule update
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The &lt;code&gt;git pull&lt;/code&gt; updates &lt;code&gt;repo1_clone&lt;/code&gt; to match &lt;code&gt;repo1&lt;/code&gt;, but won&amp;rsquo;t update the &lt;code&gt;common&lt;/code&gt; directory. Assuming that &lt;code&gt;common&lt;/code&gt; is clean, you can run &lt;code&gt;git submodule update&lt;/code&gt; to update &lt;code&gt;common&lt;/code&gt; to the correct commit of &lt;code&gt;lib&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;The final output of &lt;code&gt;tree&lt;/code&gt; is:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;.
+├── lib
+│   └── c
+├── repo1
+│   └── common
+│       └── c
+└── repo1_clone
+    └── common
+        └── c
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&#34;taking-things-further:7a99bbb2a2f52bb257bf4e5f6f41c3fe&#34;&gt;Taking things further&lt;/h2&gt;
+
+&lt;p&gt;The &lt;code&gt;common&lt;/code&gt; directories in &lt;code&gt;repo1&lt;/code&gt; and &lt;code&gt;repo1_clone&lt;/code&gt; are normal Git repos, that are cloned from &lt;code&gt;lib&lt;/code&gt;. You can do all the normal things inside them that you would in any other Git repo: &lt;code&gt;branch&lt;/code&gt;, &lt;code&gt;checkout&lt;/code&gt;, &lt;code&gt;commit&lt;/code&gt;, &lt;code&gt;pull&lt;/code&gt; and even &lt;code&gt;push&lt;/code&gt;. So if the work you&amp;rsquo;re doing on the &lt;code&gt;lib&lt;/code&gt; repo is best done in the context of &lt;code&gt;repo1&lt;/code&gt;, you can make your changes and commits in &lt;code&gt;repo1/common&lt;/code&gt;&amp;mdash;you just need to remember to commit the directory &lt;code&gt;common&lt;/code&gt; to &lt;code&gt;repo1&lt;/code&gt; when you want &lt;code&gt;repo1&lt;/code&gt; to be updated to reference the new commits you&amp;rsquo;ve made to &lt;code&gt;lib&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;footnotes&#34;&gt;
+
+&lt;hr /&gt;
+
+&lt;ol&gt;
+&lt;li id=&#34;fn:7a99bbb2a2f52bb257bf4e5f6f41c3fe:fn-recursive&#34;&gt;As an aside, we could have used &lt;code&gt;git clone repo1 repo1_clone --recursive&lt;/code&gt; for our initial clone to avoid having to use &lt;code&gt;git submodule update --init&lt;/code&gt;
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:7a99bbb2a2f52bb257bf4e5f6f41c3fe:fn-recursive&#34;&gt;↩&lt;/a&gt;&lt;/li&gt;
+&lt;li id=&#34;fn:7a99bbb2a2f52bb257bf4e5f6f41c3fe:fn-change&#34;&gt;If we change our mind, we can run &lt;code&gt;git submodule update&lt;/code&gt; to revert the submodule (assuming that it is &lt;em&gt;clean&lt;/em&gt;)
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:7a99bbb2a2f52bb257bf4e5f6f41c3fe:fn-change&#34;&gt;↩&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</description>
+    </item>
     
     <item>
       <title>Euclidean rhythms on the Monome Teletype</title>
