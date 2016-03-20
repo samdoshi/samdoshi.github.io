@@ -3,7 +3,13 @@
   
   <url>
     <loc>http://samdoshi.com/</loc>
+    <lastmod>2016-03-20T14:00:00+00:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://samdoshi.com/post/2016/03/teletype-euclidean/</loc>
+    <lastmod>2016-03-20T14:00:00+00:00</lastmod>
   </url>
   
 </urlset>

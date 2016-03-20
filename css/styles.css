@@ -15,7 +15,7 @@ html {
   line-height: 1.5; }
   @media (min-width: 38em) {
     html {
-      font-size: 20px; } }
+      font-size: 18px; } }
 
 body {
   color: #515151;
@@ -473,7 +473,7 @@ green     #859900  operators, other keywords
 
 /* Literal.Number.Integer.Long */
 .container {
-  max-width: 42rem;
+  max-width: 46rem;
   padding-left: 1.5rem;
   padding-right: 1.5rem;
   margin-left: auto;
