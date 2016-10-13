@@ -11,7 +11,8 @@
   <link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
   <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,300,100,700&subset=latin,greek,greek-ext,latin-ext" rel="stylesheet" type="text/css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-  <link href="" rel="alternate" type="application/rss+xml" title="Sam Doshi" />
+  <link href="http://samdoshi.com/index.xml" rel="alternate" type="application/rss+xml" title="Sam Doshi" />
+  <link href="http://samdoshi.com/index.xml" rel="feed" type="application/rss+xml" title="Sam Doshi" />
 </head>
 
 
@@ -41,9 +42,7 @@
             Sun, Mar 20, 2016
           </time>
 
-          
-
-<p>Earlier this year I did some work on a Euclidean rhythm operator for the <a href="http://monome.org/docs/modular/teletype/">Monome Teletype</a>. Here is the <a href="https://github.com/tehn/mod/pull/68">pull request</a><sup class="footnote-ref" id="fnref:d872790bb8e0a4c6a0054e207d563af0:fn-bugfix"><a rel="footnote" href="#fn:d872790bb8e0a4c6a0054e207d563af0:fn-bugfix">1</a></sup>, the <a href="https://github.com/tehn/mod/releases/tag/v1.12">beta firmware</a>, and there is also a thread to discuss it on <a href="http://llllllll.co/t/a-euclidean-rhythm-operator-for-the-teletype/2344?u=sam">lines</a>.</p>
+          <p>Earlier this year I did some work on a Euclidean rhythm operator for the <a href="http://monome.org/docs/modular/teletype/">Monome Teletype</a>. Here is the <a href="https://github.com/tehn/mod/pull/68">pull request</a><sup class="footnote-ref" id="fnref:fn-bugfix"><a rel="footnote" href="#fn:fn-bugfix">1</a></sup>, the <a href="https://github.com/tehn/mod/releases/tag/v1.12">beta firmware</a>, and there is also a thread to discuss it on <a href="http://llllllll.co/t/a-euclidean-rhythm-operator-for-the-teletype/2344?u=sam">lines</a>.</p>
 
 <div class="video-container">
     <iframe class="youtube-player" type="text/html" width="100%" height="auto" src="https://www.youtube.com/embed/f2FMVaVkiDo" allowfullscreen frameborder="0">
@@ -51,9 +50,11 @@
 </div>
 
 
-<h2 id="euclidean-rhythms:d872790bb8e0a4c6a0054e207d563af0">Euclidean rhythms</h2>
+<p></p>
 
-<p>Euclidean rhythms were first described by Godfried Toussaint in his 2005 paper <a href="http://cgm.cs.mcgill.ca/~godfried/publications/banff.pdf">&ldquo;The Euclidean Algorithm Generates Traditional Musical Rhythms&rdquo;</a><sup class="footnote-ref" id="fnref:d872790bb8e0a4c6a0054e207d563af0:fn-citation"><a rel="footnote" href="#fn:d872790bb8e0a4c6a0054e207d563af0:fn-citation">2</a></sup>. From the abstract:</p>
+<h2 id="euclidean-rhythms">Euclidean rhythms</h2>
+
+<p>Euclidean rhythms were first described by Godfried Toussaint in his 2005 paper <a href="http://cgm.cs.mcgill.ca/~godfried/publications/banff.pdf">&ldquo;The Euclidean Algorithm Generates Traditional Musical Rhythms&rdquo;</a><sup class="footnote-ref" id="fnref:fn-citation"><a rel="footnote" href="#fn:fn-citation">2</a></sup>. From the abstract:</p>
 
 <blockquote>
 <p>The <em>Euclidean</em> algorithm (which comes down to us from Euclid&rsquo;s <em>Elements</em>) computes the greatest common divisor of two given integers. It is shown here that the structure of the Euclidean algorithm may be used to generate, very efficiently, a large family of rhythms used as timelines (<em>ostinatos</em>), in sub-Saharan African music in particular, and world music in general. These rhythms, here dubbed <em>Euclidean</em> rhythms, have the property that their onset patterns are distributed as evenly as possible.</p>
@@ -63,17 +64,17 @@
 
 <p>In essence a Euclidean rhythm evenly spreads out a numbers of beats (or <em>fill</em>), along a repeating sequence of a given <em>length</em>. Thus, the Euclidean rhythm <em>fill=4, length=16</em>, is <code>x...x...x...x...</code> (a.k.a. four on the floor at 16<sup>th</sup> beats). Given that the rhythm repeats, this is more efficiently given as <em>fill=1, length=4</em>: <code>x...</code>. More interesting examples are in the <a href="http://cgm.cs.mcgill.ca/~godfried/publications/banff.pdf">paper</a>.</p>
 
-<h2 id="on-the-teletype:d872790bb8e0a4c6a0054e207d563af0">On the Teletype</h2>
+<h2 id="on-the-teletype">On the Teletype</h2>
 
 <p>On the Teletype, Euclidean rhythms are implemented with a new operator, <code>ER</code> as follows:</p>
-<div class="highlight"><pre><span></span>ER fill length step
-</pre></div>
+<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>ER fill length step
+</code></pre></div>
 
 <p>The operator either returns a <code>0</code> (i.e. no beat) or a <code>1</code> (a beat) for a given Euclidean rhythm, where <em>fill</em> is the number of played beats and <em>length</em> is the length of a single sequence (as previously described). The 3<sup>rd</sup> parameter, <em>step</em>, is the value of the rhythm at a given step. Particular care must be given as <em>step</em> is <strong>0-based</strong> like many other operations on the Teletype, i.e. the first step is 0, and the last step in a sequence that has length 16 is 15!</p>
 
-<p>Both <em>fill</em> and <em>length</em> accept values between 1 and 32 inclusive<sup class="footnote-ref" id="fnref:d872790bb8e0a4c6a0054e207d563af0:fn-values"><a rel="footnote" href="#fn:d872790bb8e0a4c6a0054e207d563af0:fn-values">3</a></sup>, where <em>fill</em> &le; <em>length</em>. <em>Step</em> may be any number&mdash;it is modulo (or wrapped) with the length, so that it is always in bounds. Any invalid input results in the operator returning a <code>0</code>.</p>
+<p>Both <em>fill</em> and <em>length</em> accept values between 1 and 32 inclusive<sup class="footnote-ref" id="fnref:fn-values"><a rel="footnote" href="#fn:fn-values">3</a></sup>, where <em>fill</em> &le; <em>length</em>. <em>Step</em> may be any number&mdash;it is modulo (or wrapped) with the length, so that it is always in bounds. Any invalid input results in the operator returning a <code>0</code>.</p>
 
-<h2 id="some-simple-examples:d872790bb8e0a4c6a0054e207d563af0">Some simple examples</h2>
+<h2 id="some-simple-examples">Some simple examples</h2>
 
 <p>Let&rsquo;s look at the example of <em>fill=4, length=16</em>, i.e. <code>x...x...x...x...</code>. (These are best entered in <em>LIVE mode</em>.)</p>
 
@@ -90,8 +91,8 @@
 <p>Let&rsquo;s create a simple script that outputs a four on the floor rhythm by using the <code>ER</code> operator. Enter the following scripts as <code>I</code> and <code>SCRIPT 1</code>, and then supply a 16<sup>th</sup> note trigger to input 1.</p>
 
 <p><code>I:</code></p>
-<div class="highlight"><pre><span></span>T 0
-</pre></div>
+<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>T 0
+</code></pre></div>
 
 <p><code>SCRIPT 1:</code></p>
 <div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>IF ER 4 16 T : TR.PULSE A
@@ -106,7 +107,7 @@ IF ER 6 16 T : TR.PULSE B
 T ADD 1 T
 </code></pre></div>
 
-<h2 id="onset-or-rotation-or-offset:d872790bb8e0a4c6a0054e207d563af0">Onset (or rotation or offset)</h2>
+<h2 id="onset-or-rotation-or-offset">Onset (or rotation or offset)</h2>
 
 <p>You might have noticed while playing with the above example that certain combinations of rhythms can&rsquo;t be achieved as things stand, for example:</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>A: x...x...x...x...
@@ -122,13 +123,13 @@ IF ER 4 16 Y : TR.PULSE B
 T ADD 1 T
 </code></pre></div>
 
-<p>We&rsquo;ve had to introduce another variable <code>Y</code> as we can&rsquo;t fit everything on one line<sup class="footnote-ref" id="fnref:d872790bb8e0a4c6a0054e207d563af0:fn-yet"><a rel="footnote" href="#fn:d872790bb8e0a4c6a0054e207d563af0:fn-yet">4</a></sup>. One thing that might not be obvious initially is that if we want to rotate a rhythm forwards we need to <code>SUB</code>, if we want to rotate a rhythm backwards we need to <code>ADD</code>. Thus if we want to use rotation with our Euclidean rhythms we can use the following:</p>
+<p>We&rsquo;ve had to introduce another variable <code>Y</code> as we can&rsquo;t fit everything on one line<sup class="footnote-ref" id="fnref:fn-yet"><a rel="footnote" href="#fn:fn-yet">4</a></sup>. One thing that might not be obvious initially is that if we want to rotate a rhythm forwards we need to <code>SUB</code>, if we want to rotate a rhythm backwards we need to <code>ADD</code>. Thus if we want to use rotation with our Euclidean rhythms we can use the following:</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>ER fill length SUB step rotation
 </code></pre></div>
 
 <p>where <em>rotation</em> is the number of steps <em>forward</em> we wish to rotate the rhythm.</p>
 
-<h2 id="a-four-channel-euclidean-drum-machine:d872790bb8e0a4c6a0054e207d563af0">A four channel Euclidean drum machine</h2>
+<h2 id="a-four-channel-euclidean-drum-machine">A four channel Euclidean drum machine</h2>
 
 <p>Finally, let&rsquo;s recreate part of the drum machine from the video at the top of the page. We&rsquo;re going use the <em>pattern tracker</em> to hold our values for <em>fill</em>, <em>length</em> and <em>rotation</em> for four drum sequences. Input 0 will be reset, and input 1 will be clock. The four trigger outputs A-D will trigger our drum modules.</p>
 
@@ -141,12 +142,12 @@ T ADD 1 T
 </code></pre></div>
 
 <p><code>SCRIPT 2:</code> trigger scripts 3-6, increase <code>T</code> by 1</p>
-<div class="highlight"><pre><span></span>SCRIPT 3
+<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>SCRIPT 3
 SCRIPT 4
 SCRIPT 5
 SCRIPT 6
 T ADD 1 T
-</pre></div>
+</code></pre></div>
 
 <p><code>SCRIPT 3:</code> read <em>fill</em>, <em>length</em> and <em>rotation</em> from the first 3 rows respectively of column 0 of the pattern data</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>X PN 0 2
@@ -189,17 +190,16 @@ IF Y : TR.PULSE D
 <hr />
 
 <ol>
-<li id="fn:d872790bb8e0a4c6a0054e207d563af0:fn-bugfix">And the <a href="https://github.com/tehn/mod/pull/73">bug fix</a>
- <a class="footnote-return" href="#fnref:d872790bb8e0a4c6a0054e207d563af0:fn-bugfix">↩</a></li>
-<li id="fn:d872790bb8e0a4c6a0054e207d563af0:fn-citation">Toussaint, G. T. (2005, July). The Euclidean algorithm generates traditional musical rhythms. <em>In Proceedings of BRIDGES: Mathematical Connections in Art, Music and Science</em> (pp. 47-56).
- <a class="footnote-return" href="#fnref:d872790bb8e0a4c6a0054e207d563af0:fn-citation">↩</a></li>
-<li id="fn:d872790bb8e0a4c6a0054e207d563af0:fn-values">As an aside, the values for all the Euclidean rhythms have been precomputed and saved as jagged C arrays (~2kb) to avoid having to perform Bjorklund&rsquo;s algorithm on the Teletype.
- <a class="footnote-return" href="#fnref:d872790bb8e0a4c6a0054e207d563af0:fn-values">↩</a></li>
-<li id="fn:d872790bb8e0a4c6a0054e207d563af0:fn-yet"><a href="https://github.com/samdoshi/monome-mod/commit/5cf6dd2">Well&hellip;, maybe not yet</a>
- <a class="footnote-return" href="#fnref:d872790bb8e0a4c6a0054e207d563af0:fn-yet">↩</a></li>
+<li id="fn:fn-bugfix">And the <a href="https://github.com/tehn/mod/pull/73">bug fix</a>
+ <a class="footnote-return" href="#fnref:fn-bugfix">↩</a></li>
+<li id="fn:fn-citation">Toussaint, G. T. (2005, July). The Euclidean algorithm generates traditional musical rhythms. <em>In Proceedings of BRIDGES: Mathematical Connections in Art, Music and Science</em> (pp. 47-56).
+ <a class="footnote-return" href="#fnref:fn-citation">↩</a></li>
+<li id="fn:fn-values">As an aside, the values for all the Euclidean rhythms have been precomputed and saved as jagged C arrays (~2kb) to avoid having to perform Bjorklund&rsquo;s algorithm on the Teletype.
+ <a class="footnote-return" href="#fnref:fn-values">↩</a></li>
+<li id="fn:fn-yet"><a href="https://github.com/samdoshi/monome-mod/commit/5cf6dd2">Well&hellip;, maybe not yet</a>
+ <a class="footnote-return" href="#fnref:fn-yet">↩</a></li>
 </ol>
 </div>
-
 
         </article>
 
