@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title> AVR32 RAM and ROM usage &middot; Sam Doshi </title>
+
+  <link rel="stylesheet" href="http://samdoshi.com/css/styles.css">
+  <link href="https://fonts.googleapis.com/css?family=Merriweather:300,300i,400,400i,700,700i|Roboto+Mono:400,400i,700,700i|Roboto+Slab:300,400,700&amp;subset=latin-ext" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+  <link href="http://samdoshi.com/index.xml" rel="alternate" type="application/rss+xml" title="Sam Doshi" />
+  <link href="http://samdoshi.com/index.xml" rel="feed" type="application/rss+xml" title="Sam Doshi" />
+</head>
+
+
+  <body>
+
+    <div class="content container">
+
+      <header class="masthead">
+  <h3 class="masthead-title">
+    <a href="http://samdoshi.com/" title="Home">Sam Doshi</a>
+    <small>personal ramblings</small>
+  </h3>
+  <nav class="masthead-links">
+    <ul>
+      <li><a href="https://github.com/samdoshi"><i class="fa fa-github"></i></a></li>
+    </ul>
+  </nav>
+</header>
+
+
+      <main>
+
+        <article class="post">
+
+          <h1 class="post-title">AVR32 RAM and ROM usage</h1>
+          <time datetime="Fri, Oct 14, 2016" class="post-date">
+            Fri, Oct 14, 2016
+          </time>
+
+          <p>When developing for embedded devices it&rsquo;s incredibly important to keep a track of your RAM and ROM usage. In order to do so, we can use the Unix utility <code>size</code>, in particular for the AVR32, we use the <code>avr32-size</code> command.</p>
+
+<p>If you want the quick answer:</p>
+
+<blockquote>
+<p>Run <code>avr32-size -A &lt;insert name&gt;.elf</code></p>
+
+<p>The <code>.heap</code> size is effectively your free RAM (<code>malloc</code> usage aside).</p>
+
+<p>Your ROM size is approximately <code>.data</code> + <code>.rodata</code> + <code>.text</code>, to which you can add your <code>.flash_nvram</code> to get an approximation of total flash ROM use.</p>
+</blockquote>
+
+<p>Read on for the gory details&hellip;</p>
+
+<p></p>
+
+<h2 id="output-formats">Output formats</h2>
+
+<p>Two output formats for the <code>avr32-size</code> command exist, the simpler &lsquo;Berkeley&rsquo; style, e.g. <code>avr32-size -B teletype.elf</code>:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>   text	   data	    bss	    dec	    hex	filename
+  81034	   7504	 237872	 326410	  4fb0a	teletype.elf
+</code></pre></div>
+
+<p>Or the more complex &lsquo;SysV&rsquo; style, e.g. <code>avr32-size -A teletype.elf</code>:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>teletype.elf  :
+section               size         addr
+.reset                8204   2147483648
+.rela.got                0   2147491852
+.init                   26   2147491852
+.text                55604   2147491880
+.exception             512   2147547648
+.fini                   24   2147548160
+.rodata              16664   2147548184
+.dalign                  4            4
+.ctors                   8            8
+.dtors                   8           16
+.jcr                     4           24
+.got                     0           28
+.data                 7484           28
+.balign                  0         7512
+.bss                  8064         7512
+.heap                74536        15576
+.comment                47            0
+.debug_aranges        8624            0
+.debug_pubnames      20090            0
+.debug_info         279439            0
+.debug_abbrev        38429            0
+.debug_line         161921            0
+.debug_frame         25408            0
+.debug_str           53842            0
+.debug_loc           76994            0
+.debug_macinfo    34421509            0
+.stack                8192        90112
+.flash_nvram        147076   2147745792
+.debug_ranges        14936            0
+Total             35427649
+</code></pre></div>
+
+<p>We&rsquo;re going to use the SysV style, the Berkeley style doesn&rsquo;t include a useful value for <code>BSS</code><sup class="footnote-ref" id="fnref:fn-berkeley"><a rel="footnote" href="#fn:fn-berkeley">1</a></sup>.</p>
+
+<h2 id="enhancing-the-output-of-avr32-size">Enhancing the output of <code>avr32-size</code></h2>
+
+<p>Before we go further, let&rsquo;s enhance the output of <code>avr32-size</code>, firstly I would like both the decimal and hexadecimal values side by side:</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span></span>pr -w <span class="m">85</span> -m -t <span class="se">\</span>
+   &lt;<span class="o">(</span>avr32-size -Ad teletype.elf<span class="o">)</span> <span class="se">\</span>
+   &lt;<span class="o">(</span>avr32-size -Ax teletype.elf <span class="p">|</span> cut -c 19-<span class="o">)</span>
+</code></pre></div>
+
+<p>Next, let&rsquo;s remove the <code>.debug_*</code> lines and the headers and totals:</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span></span>pr -w <span class="m">85</span> -m -t <span class="se">\</span>
+   &lt;<span class="o">(</span>avr32-size -Ad teletype.elf<span class="o">)</span> <span class="se">\</span>
+   &lt;<span class="o">(</span>avr32-size -Ax teletype.elf <span class="p">|</span> cut -c 19-<span class="o">)</span> <span class="se">\</span>
+<span class="p">|</span> grep <span class="s1">&#39;^\..*&#39;</span> <span class="se">\</span>
+<span class="p">|</span> grep -v <span class="s1">&#39;^.debug.*&#39;</span>
+</code></pre></div>
+
+<p>And finally, let&rsquo;s sort by address:</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span></span>pr -w <span class="m">85</span> -m -t <span class="se">\</span>
+   &lt;<span class="o">(</span>avr32-size -Ad teletype.elf<span class="o">)</span> <span class="se">\</span>
+   &lt;<span class="o">(</span>avr32-size -Ax teletype.elf <span class="p">|</span> cut -c 19-<span class="o">)</span> <span class="se">\</span>
+<span class="p">|</span> grep <span class="s1">&#39;^\..*&#39;</span> <span class="se">\</span>
+<span class="p">|</span> grep -v <span class="s1">&#39;^.debug.*&#39;</span> <span class="se">\</span>
+<span class="p">|</span> sort -k 3
+</code></pre></div>
+
+<h2 id="understanding-the-output">Understanding the output</h2>
+
+<p>Let&rsquo;s take our enhanced command and run it against a built version of Teletype<sup class="footnote-ref" id="fnref:fn-commit"><a rel="footnote" href="#fn:fn-commit">2</a></sup>, we get the following output (to which I have added a header and highlighted the interesting lines).</p>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>Name            Size (dec)   Addr (dec)  Size (hex)   Addr (hex)
+================================================================
+.comment                47            0        0x2f          0x0
+.dalign                  4            4         0x4          0x4
+.ctors                   8            8         0x8          0x8
+.dtors                   8           16         0x8         0x10
+.jcr                     4           24         0x4         0x18
+.got                     0           28         0x0         0x1c
+<span class="hll">.data                 7484           28      0x1d3c         0x1c
+</span>.balign                  0         7512         0x0       0x1d58
+<span class="hll">.bss                  8064         7512      0x1f80       0x1d58
+</span><span class="hll">.heap                74536        15576     0x12328       0x3cd8
+</span><span class="hll">.stack                8192        90112      0x2000      0x16000
+</span>.reset                8204   2147483648      0x200c   0x80000000
+.rela.got                0   2147491852         0x0   0x8000200c
+.init                   26   2147491852        0x1a   0x8000200c
+<span class="hll">.text                55604   2147491880      0xd934   0x80002028
+</span>.exception             512   2147547648       0x200   0x8000fa00
+.fini                   24   2147548160        0x18   0x8000fc00
+<span class="hll">.rodata              16664   2147548184      0x4118   0x8000fc18
+</span><span class="hll">.flash_nvram        147076   2147745792     0x23e84   0x80040000
+</span></code></pre></div>
+
+
+<p>The <code>AT32UC3B0512</code><sup class="footnote-ref" id="fnref:fn-at32uc3b0512"><a rel="footnote" href="#fn:fn-at32uc3b0512">3</a></sup> used by the Teletype has 96kb of RAM and 512kb of flash ROM. The address space is unified, so a 32-bit pointer can refer to a location in RAM or in ROM. The RAM starts at location <code>0x0</code>, the ROM starts at <code>0x80000000</code>. For those MCUs that support SDRAM, that would start at <code>0xD0000000</code>.</p>
+
+<p>The above table gives the name, size and address for each section of the unified address space, sorted by memory address. There can be gaps between sections, for example there is a gap of 180,944 bytes between the end of <code>.rodata</code> and the start of <code>.flash_nvram</code>, later on we&rsquo;ll see that there is a copy of <code>.data</code> stored there for use at initialisation.</p>
+
+<h2 id="ram">RAM</h2>
+
+<p>We aren&rsquo;t interested in all the sections in RAM, for example <code>.comment</code> contains the name of the compiler<sup class="footnote-ref" id="fnref:fn-comment"><a rel="footnote" href="#fn:fn-comment">4</a></sup> and will be striped out before the final <code>.hex</code> file is created.</p>
+
+<p>We are interested in the following (see <a href="https://en.wikipedia.org/wiki/Data_segment">Wikipedia</a> for more info on these):</p>
+
+<dl>
+<dt><code>.data</code></dt>
+<dd>This is used for initialised data, it takes up space in <em>both</em> RAM and ROM, unfortunately the ROM address is not given in the output of <code>avr32-size</code>, we&rsquo;ll need <code>avr32-objdump</code> for that (see later.)</dd>
+<dt><code>.bss</code></dt>
+<dd>This is used for uninitialised data, it only takes up space in RAM.</dd>
+<dt><code>.stack</code></dt>
+<dd>The call stack. The size is set by the <a href="https://github.com/monome/libavr32/blob/86af65cef1130e4a40dd3616add84198f521bd0b/src/link_uc3b0512.lds">linker script</a>, it may be changed by updating the linker variable <code>__stack_size__</code>, ideally by updating <code>LDFLAGS</code> in <code>config.mk</code>,
+e.g. <code>LDFLAGS = -Wl,-e,_trampoline,--defsym=__stack_size__=0x1000</code> for a 4096 byte stack.</dd>
+<dt><code>.heap</code></dt>
+<dd>By default <strong>all unused RAM is allocated to the heap</strong> for use with <code>malloc</code> and such. Override the linker variable <code>__heap_size__</code> if you wish to change this (though I can&rsquo;t think of a reason as to why you would).</dd>
+</dl>
+
+<h2 id="rom">ROM</h2>
+
+<p>The ROM contains your code and any read-only data, as well as the initial value for any read-write data. It also contains the NVRAM<sup class="footnote-ref" id="fnref:fn-nvram"><a rel="footnote" href="#fn:fn-nvram">5</a></sup>, which can be read directly, but writes must go via the <a href="https://github.com/monome/libavr32/blob/ec718209606be5df516496c474df9ae82df179ee/asf/avr32/drivers/flashc/flashc.h">flash controller interface</a>.</p>
+
+<dl>
+<dt><code>.text</code></dt>
+<dd>This is the code segment, it contains your program.</dd>
+<dt><code>.data</code></dt>
+<dd>A read only copy of your initialised data. It is copied from ROM to RAM after the bootloader has run.</dd>
+<dt><code>.rodata</code></dt>
+<dd>Constant read-only data.</dd>
+<dt><code>.flash_nvram</code></dt>
+<dd>The location of the NVRAM data, plus the size of any variables you&rsquo;ve explicitly stored in there via <code>__attribute__((__section__(&quot;.flash_nvram&quot;)))</code>. The total size of flash that you wish to dedicate to NVRAM usage is configured with the linker variable <code>__flash_nvram_size__</code> (ideally set in <code>LDFLAGS</code>).</dd>
+</dl>
+
+<h2 id="initalised-vs-uninitalised-vs-constant-data">Initalised vs. uninitalised vs. constant data</h2>
+
+<p>Understanding the difference between initialised, uninitialised and constant data will help you understand where they are stored. The following only applies to global data. Local data lives on the stack.</p>
+
+<dl>
+<dt>Initialised data</dt>
+<dd>This takes the form <code>int x = 10;</code> and is stored in <code>.data</code>, which occupies space in <em>both</em> ROM and RAM.</dd>
+<dt>Uninitialised data</dt>
+<dd>This takes the form <code>int x;</code> and is stored in <code>.bss</code> in RAM only.</dd>
+<dt>Constant data</dt>
+<dd>This takes the form <code>const int x = 10;</code> and is stored in <code>.rodata</code> in ROM only.</dd>
+</dl>
+
+<p>It&rsquo;s worth being aware that the compiler can and will try to make optimisations for you. So constants will be in-lined if possible.</p>
+
+<h2 id="vma-and-lma-using-avr32-objdump">VMA and LMA, using <code>avr32-objdump</code></h2>
+
+<p>Unfortunately <code>avr32-size -A</code> doesn&rsquo;t list the ROM address for <code>.data</code>, in order to discover the address we need to use <code>avr32-objdump</code> and understand the difference between VMA and LMA.</p>
+
+<p>Quoting <a href="http://www.atmel.com/images/doc32158.pdf">AVR32795: Using the GNU Linker Scripts on
+AVR UC3 Devices</a>:</p>
+
+<blockquote>
+<p><strong>3.3 VMA and LMA</strong></p>
+
+<p>Every loadable or allocatable output section has two addresses. The first is the <strong>VMA, or virtual memory address</strong>. This is the address the section will have when the output file is run. The second is the <strong>LMA, or load memory address</strong>. This is the address at which the section will be loaded. In most cases the two addresses will be the same.</p>
+
+<p><strong>An example of when the LMA and VMA might be different is when a data section is loaded into ROM, and then copied into RAM when the program starts up</strong> (a technique often used to initialize global variables in a ROM-based system). In this case, the ROM address would be the LMA and the RAM address would be the VMA.</p>
+</blockquote>
+
+<p>We can use <code>avr32-objdump</code> to list the VMA and LMA:</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span></span>avr32-objdump -h teletype.elf
+</code></pre></div>
+
+<p>I have omitted the <code>.debug_*</code> sections and highlighted the <code>.data</code> and <code>.rodata</code> sections. We can see that the VMA and LMA are different for <code>.data</code>, but not for <code>.rodata</code>.</p>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>teletype.elf:     file format elf32-avr32
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .reset        0000200c  80000000  80000000  00000400  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .rela.got     00000000  8000200c  8000200c  0000240c  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  2 .init         0000001a  8000200c  8000200c  0000240c  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  3 .text         0000d944  80002028  80002028  00002428  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  4 .exception    00000200  8000fa00  8000fa00  0000fe00  2**9
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  5 .fini         00000018  8000fc00  8000fc00  00010000  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+<span class="hll">  6 .rodata       00004118  8000fc18  8000fc18  00010018  2**2
+</span>                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  7 .dalign       00000004  00000004  00000004  00000000  2**0
+                  ALLOC
+  8 .ctors        00000008  00000008  80013d30  00014408  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+  9 .dtors        00000008  00000010  80013d38  00014410  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+ 10 .jcr          00000004  00000018  80013d40  00014418  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+ 11 .got          00000000  0000001c  80013d44  0001441c  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+<span class="hll"> 12 .data         00005d3c  0000001c  80013d44  0001441c  2**2
+</span>                  CONTENTS, ALLOC, LOAD, DATA
+ 13 .balign       00000000  00005d58  80019a80  0001a158  2**0
+                  ALLOC
+ 14 .bss          00001f80  00005d58  00005d58  00000000  2**2
+                  ALLOC
+ 15 .heap         0000e328  00007cd8  00007cd8  00000000  2**0
+                  ALLOC
+ 16 .comment      0000002f  00000000  00000000  0001a158  2**0
+                  CONTENTS, READONLY
+ 26 .stack        00002000  00016000  00016000  00000000  2**0
+                  ALLOC
+ 27 .flash_nvram  00023e84  80040000  80019a80  0001a400  2**1
+                  ALLOC
+</code></pre></div>
+
+
+<h2 id="summary">Summary</h2>
+
+<p>RAM usage is governed by the size of <code>.data</code>, <code>.bss</code> and <code>.stack</code>. These are the things we have control over. Any free RAM is allocated to the <code>.heap</code>, in effect this is how much free RAM you have (<code>malloc</code> use aside).</p>
+
+<p>The flash ROM is divided into ROM and NVRAM as determined by the linker variable <code>__flash_nvram_size__</code>. The size of ROM is primarily determined by the size of <code>.text</code>, <code>.data</code> and <code>.rodata</code>. NVRAM usage via named sections in your source code is given by <code>.flash_nvram</code>, this will not include any manual flash usage via the <a href="https://github.com/monome/libavr32/blob/ec718209606be5df516496c474df9ae82df179ee/asf/avr32/drivers/flashc/flashc.h">flash controller</a>.</p>
+
+<p>For more information see:</p>
+
+<ul>
+<li><a href="https://linux.die.net/man/1/size"><code>size</code> man page</a></li>
+<li><a href="https://linux.die.net/man/1/objdump"><code>objdump</code> man page</a></li>
+<li><a href="https://linux.die.net/man/1/readelf"><code>readelf</code> man page</a></li>
+<li><a href="http://www.atmel.com/Images/doc32074.pdf">AVR32006: Getting started with GCC for AVR32</a></li>
+<li><a href="http://www.atmel.com/images/doc32158.pdf">AVR32795: Using the GNU Linker Scripts on AVR UC3 Devices</a></li>
+<li><a href="http://www.atmel.com/Images/Atmel-42370-Optimizing-ASF-Code-Size-to-Minimize-Flash-and-RAM-Usage_ApplicationNote_AT08569.pdf">AT08569: Optimizing ASF Code Size to Minimize Flash
+and RAM Usage</a></li>
+</ul>
+<div class="footnotes">
+
+<hr />
+
+<ol>
+<li id="fn:fn-berkeley">It appears to include <code>.flash_nvram</code>, plus possibly <code>.heap</code> and <code>.stack</code> in the it&rsquo;s calculation of <code>BSS</code>.
+ <a class="footnote-return" href="#fnref:fn-berkeley">↩</a></li>
+<li id="fn:fn-commit">Commit <a href="https://github.com/monome/teletype/commit/220ea9d98de47b5a46507050266379d6599e3110"><code>220ea9d</code></a>
+ <a class="footnote-return" href="#fnref:fn-commit">↩</a></li>
+<li id="fn:fn-at32uc3b0512">Also used by Ansible, see the <a href="http://www.atmel.com/devices/AT32UC3B0512.aspx">Atmel website</a>. White Whale, Meadowphysics and Earthsea all use the <code>AT32UC3B0256</code> which has 32kb of RAM and 256kb of flash ROM.
+ <a class="footnote-return" href="#fnref:fn-at32uc3b0512">↩</a></li>
+<li id="fn:fn-comment"><code>avr32-readelf -p .comment teletype.elf</code>
+ <a class="footnote-return" href="#fnref:fn-comment">↩</a></li>
+<li id="fn:fn-nvram"><a href="https://en.wikipedia.org/wiki/Non-volatile_memory">Non-volatile RAM</a>
+ <a class="footnote-return" href="#fnref:fn-nvram">↩</a></li>
+</ol>
+</div>
+
+        </article>
+
+      </main>
+
+      
+
+      <footer class="footer">
+  <small>
+    &copy; <time datetime="2016">2016</time> Sam Doshi. All rights reserved.
+  </small>
+  <br>
+  <small>
+    <a href="http://samdoshi.com/key.asc"><i class="fa fa-lock"></i> 8D92 2C3A 37A4 875B</a>
+  </small>
+</footer>
+
+
+    </div>
+
+  </body>
+
+</html>

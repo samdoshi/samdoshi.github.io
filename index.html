@@ -8,8 +8,7 @@
   <title> Sam Doshi &middot; Sam Doshi </title>
 
   <link rel="stylesheet" href="http://samdoshi.com/css/styles.css">
-  <link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
-  <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,300,100,700&subset=latin,greek,greek-ext,latin-ext" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Merriweather:300,300i,400,400i,700,700i|Roboto+Mono:400,400i,700,700i|Roboto+Slab:300,400,700&amp;subset=latin-ext" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
   <link href="http://samdoshi.com/index.xml" rel="alternate" type="application/rss+xml" title="Sam Doshi" />
   <link href="http://samdoshi.com/index.xml" rel="feed" type="application/rss+xml" title="Sam Doshi" />
@@ -36,6 +35,36 @@
       <main>
 
         <div class="posts">
+
+          
+
+          <article class="post">
+            <h1 class="post-title"><a href="/post/2016/10/avr32-ram-and-rom-usage/"> AVR32 RAM and ROM usage</a></h1>
+            <time datetime="Fri, Oct 14, 2016" class="post-date">
+              Fri, Oct 14, 2016
+            </time>
+
+            <p>When developing for embedded devices it&rsquo;s incredibly important to keep a track of your RAM and ROM usage. In order to do so, we can use the Unix utility <code>size</code>, in particular for the AVR32, we use the <code>avr32-size</code> command.</p>
+
+<p>If you want the quick answer:</p>
+
+<blockquote>
+<p>Run <code>avr32-size -A &lt;insert name&gt;.elf</code></p>
+
+<p>The <code>.heap</code> size is effectively your free RAM (<code>malloc</code> usage aside).</p>
+
+<p>Your ROM size is approximately <code>.data</code> + <code>.rodata</code> + <code>.text</code>, to which you can add your <code>.flash_nvram</code> to get an approximation of total flash ROM use.</p>
+</blockquote>
+
+<p>Read on for the gory details&hellip;</p>
+
+<p></p>
+
+            
+            <a href="/post/2016/10/avr32-ram-and-rom-usage/">continued&hellip;</a>
+            
+
+          </article>
 
           
 
