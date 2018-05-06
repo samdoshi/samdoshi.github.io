@@ -7,11 +7,11 @@
 
   <title> Euclidean rhythms on the Monome Teletype &middot; Sam Doshi </title>
 
-  <link rel="stylesheet" href="http://samdoshi.com/css/styles.css">
+  <link rel="stylesheet" href="https://samdoshi.com/css/styles.css">
   <link href="https://fonts.googleapis.com/css?family=Merriweather:300,300i,400,400i,700,700i|Roboto+Mono:400,400i,700,700i|Roboto+Slab:300,400,700&amp;subset=latin-ext" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-  <link href="http://samdoshi.com/index.xml" rel="alternate" type="application/rss+xml" title="Sam Doshi" />
-  <link href="http://samdoshi.com/index.xml" rel="feed" type="application/rss+xml" title="Sam Doshi" />
+  <link href="https://samdoshi.com/index.xml" rel="alternate" type="application/rss+xml" title="Sam Doshi" />
+  <link href="https://samdoshi.com/index.xml" rel="feed" type="application/rss+xml" title="Sam Doshi" />
 </head>
 
 
@@ -21,7 +21,7 @@
 
       <header class="masthead">
   <h3 class="masthead-title">
-    <a href="http://samdoshi.com/" title="Home">Sam Doshi</a>
+    <a href="https://samdoshi.com/" title="Home">Sam Doshi</a>
     <small>personal ramblings</small>
   </h3>
   <nav class="masthead-links">
@@ -41,7 +41,7 @@
             Sun, Mar 20, 2016
           </time>
 
-          <p>Earlier this year I did some work on a Euclidean rhythm operator for the <a href="http://monome.org/docs/modular/teletype/">Monome Teletype</a>. Here is the <a href="https://github.com/tehn/mod/pull/68">pull request</a><sup class="footnote-ref" id="fnref:fn-bugfix"><a rel="footnote" href="#fn:fn-bugfix">1</a></sup>, the <a href="https://github.com/tehn/mod/releases/tag/v1.12">beta firmware</a>, and there is also a thread to discuss it on <a href="http://llllllll.co/t/a-euclidean-rhythm-operator-for-the-teletype/2344?u=sam">lines</a>.</p>
+          <p>Earlier this year I did some work on a Euclidean rhythm operator for the <a href="http://monome.org/docs/modular/teletype/">Monome Teletype</a>. Here is the <a href="https://github.com/tehn/mod/pull/68">pull request</a><sup class="footnote-ref" id="fnref:fn-bugfix"><a href="#fn:fn-bugfix">1</a></sup>, the <a href="https://github.com/tehn/mod/releases/tag/v1.12">beta firmware</a>, and there is also a thread to discuss it on <a href="http://llllllll.co/t/a-euclidean-rhythm-operator-for-the-teletype/2344?u=sam">lines</a>.</p>
 
 <div class="video-container">
     <iframe class="youtube-player" type="text/html" width="100%" height="auto" src="https://www.youtube.com/embed/f2FMVaVkiDo?rel=0&modestbranding=1" allowfullscreen frameborder="0">
@@ -53,7 +53,7 @@
 
 <h2 id="euclidean-rhythms">Euclidean rhythms</h2>
 
-<p>Euclidean rhythms were first described by Godfried Toussaint in his 2005 paper <a href="http://cgm.cs.mcgill.ca/~godfried/publications/banff.pdf">&ldquo;The Euclidean Algorithm Generates Traditional Musical Rhythms&rdquo;</a><sup class="footnote-ref" id="fnref:fn-citation"><a rel="footnote" href="#fn:fn-citation">2</a></sup>. From the abstract:</p>
+<p>Euclidean rhythms were first described by Godfried Toussaint in his 2005 paper <a href="http://cgm.cs.mcgill.ca/~godfried/publications/banff.pdf">&ldquo;The Euclidean Algorithm Generates Traditional Musical Rhythms&rdquo;</a><sup class="footnote-ref" id="fnref:fn-citation"><a href="#fn:fn-citation">2</a></sup>. From the abstract:</p>
 
 <blockquote>
 <p>The <em>Euclidean</em> algorithm (which comes down to us from Euclid&rsquo;s <em>Elements</em>) computes the greatest common divisor of two given integers. It is shown here that the structure of the Euclidean algorithm may be used to generate, very efficiently, a large family of rhythms used as timelines (<em>ostinatos</em>), in sub-Saharan African music in particular, and world music in general. These rhythms, here dubbed <em>Euclidean</em> rhythms, have the property that their onset patterns are distributed as evenly as possible.</p>
@@ -66,12 +66,10 @@
 <h2 id="on-the-teletype">On the Teletype</h2>
 
 <p>On the Teletype, Euclidean rhythms are implemented with a new operator, <code>ER</code> as follows:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>ER fill length step
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">ER fill length step</code></pre></div>
 <p>The operator either returns a <code>0</code> (i.e. no beat) or a <code>1</code> (a beat) for a given Euclidean rhythm, where <em>fill</em> is the number of played beats and <em>length</em> is the length of a single sequence (as previously described). The 3<sup>rd</sup> parameter, <em>step</em>, is the value of the rhythm at a given step. Particular care must be given as <em>step</em> is <strong>0-based</strong> like many other operations on the Teletype, i.e. the first step is 0, and the last step in a sequence that has length 16 is 15!</p>
 
-<p>Both <em>fill</em> and <em>length</em> accept values between 1 and 32 inclusive<sup class="footnote-ref" id="fnref:fn-values"><a rel="footnote" href="#fn:fn-values">3</a></sup>, where <em>fill</em> &le; <em>length</em>. <em>Step</em> may be any number&mdash;it is modulo (or wrapped) with the length, so that it is always in bounds. Any invalid input results in the operator returning a <code>0</code>.</p>
+<p>Both <em>fill</em> and <em>length</em> accept values between 1 and 32 inclusive<sup class="footnote-ref" id="fnref:fn-values"><a href="#fn:fn-values">3</a></sup>, where <em>fill</em> &le; <em>length</em>. <em>Step</em> may be any number&mdash;it is modulo (or wrapped) with the length, so that it is always in bounds. Any invalid input results in the operator returning a <code>0</code>.</p>
 
 <h2 id="some-simple-examples">Some simple examples</h2>
 
@@ -90,42 +88,30 @@
 <p>Let&rsquo;s create a simple script that outputs a four on the floor rhythm by using the <code>ER</code> operator. Enter the following scripts as <code>I</code> and <code>SCRIPT 1</code>, and then supply a 16<sup>th</sup> note trigger to input 1.</p>
 
 <p><code>I:</code></p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>T 0
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">T 0</code></pre></div>
 <p><code>SCRIPT 1:</code></p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>IF ER 4 16 T : TR.PULSE A
-T ADD 1 T
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">IF ER 4 16 T : TR.PULSE A
+T ADD 1 T</code></pre></div>
 <p>We&rsquo;re using <code>T</code> to hold which step we&rsquo;re on. We can update <code>SCRIPT 1</code> to add a second output:</p>
 
 <p><code>SCRIPT 1:</code></p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>IF ER 4 16 T : TR.PULSE A
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">IF ER 4 16 T : TR.PULSE A
 IF ER 6 16 T : TR.PULSE B
-T ADD 1 T
-</code></pre></div>
-
+T ADD 1 T</code></pre></div>
 <h2 id="onset-or-rotation-or-offset">Onset (or rotation or offset)</h2>
 
 <p>You might have noticed while playing with the above example that certain combinations of rhythms can&rsquo;t be achieved as things stand, for example:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>A: x...x...x...x...
-B: ..x...x...x...x.
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">A: x...x...x...x...
+B: ..x...x...x...x.</code></pre></div>
 <p>In order to create this rhythm we need to <em>rotate</em> one rhythm against the other. This is sometimes call the offset or the onset. In fact in our example rhythm B is the same A, but rotated 2 steps forwards (or backwards). Let&rsquo;s modify <code>SCRIPT 1</code> again:</p>
 
 <p><code>SCRIPT 1:</code></p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>IF ER 4 16 T : TR.PULSE A
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">IF ER 4 16 T : TR.PULSE A
 Y SUB T 2
 IF ER 4 16 Y : TR.PULSE B
-T ADD 1 T
-</code></pre></div>
-
-<p>We&rsquo;ve had to introduce another variable <code>Y</code> as we can&rsquo;t fit everything on one line<sup class="footnote-ref" id="fnref:fn-yet"><a rel="footnote" href="#fn:fn-yet">4</a></sup>. One thing that might not be obvious initially is that if we want to rotate a rhythm forwards we need to <code>SUB</code>, if we want to rotate a rhythm backwards we need to <code>ADD</code>. Thus if we want to use rotation with our Euclidean rhythms we can use the following:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>ER fill length SUB step rotation
-</code></pre></div>
-
+T ADD 1 T</code></pre></div>
+<p>We&rsquo;ve had to introduce another variable <code>Y</code> as we can&rsquo;t fit everything on one line<sup class="footnote-ref" id="fnref:fn-yet"><a href="#fn:fn-yet">4</a></sup>. One thing that might not be obvious initially is that if we want to rotate a rhythm forwards we need to <code>SUB</code>, if we want to rotate a rhythm backwards we need to <code>ADD</code>. Thus if we want to use rotation with our Euclidean rhythms we can use the following:</p>
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">ER fill length SUB step rotation</code></pre></div>
 <p>where <em>rotation</em> is the number of steps <em>forward</em> we wish to rotate the rhythm.</p>
 
 <h2 id="a-four-channel-euclidean-drum-machine">A four channel Euclidean drum machine</h2>
@@ -133,56 +119,40 @@ T ADD 1 T
 <p>Finally, let&rsquo;s recreate part of the drum machine from the video at the top of the page. We&rsquo;re going use the <em>pattern tracker</em> to hold our values for <em>fill</em>, <em>length</em> and <em>rotation</em> for four drum sequences. Input 0 will be reset, and input 1 will be clock. The four trigger outputs A-D will trigger our drum modules.</p>
 
 <p><code>I:</code> set the time <code>T</code> to 0</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>T 0
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">T 0</code></pre></div>
 <p><code>SCRIPT 1:</code> reset the time <code>T</code> to 0</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>T 0
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">T 0</code></pre></div>
 <p><code>SCRIPT 2:</code> trigger scripts 3-6, increase <code>T</code> by 1</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>SCRIPT 3
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">SCRIPT 3
 SCRIPT 4
 SCRIPT 5
 SCRIPT 6
-T ADD 1 T
-</code></pre></div>
-
+T ADD 1 T</code></pre></div>
 <p><code>SCRIPT 3:</code> read <em>fill</em>, <em>length</em> and <em>rotation</em> from the first 3 rows respectively of column 0 of the pattern data</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>X PN 0 2
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">X PN 0 2
 Y ER PN 0 0 PN 0 1 SUB T X
-IF Y : TR.PULSE A
-</code></pre></div>
-
+IF Y : TR.PULSE A</code></pre></div>
 <p><code>SCRIPT 4:</code> as script 3, but use column 1</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>X PN 1 2
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">X PN 1 2
 Y ER PN 1 0 PN 1 1 SUB T X
-IF Y : TR.PULSE B
-</code></pre></div>
-
+IF Y : TR.PULSE B</code></pre></div>
 <p><code>SCRIPT 5:</code> as script 3, but use column 2</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>X PN 2 2
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">X PN 2 2
 Y ER PN 2 0 PN 2 1 SUB T X
-IF Y : TR.PULSE C
-</code></pre></div>
-
+IF Y : TR.PULSE C</code></pre></div>
 <p><code>SCRIPT 6:</code> as scripts 3 but use column 3</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>X PN 3 2
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">X PN 3 2
 Y ER PN 3 0 PN 3 1 SUB T X
-IF Y : TR.PULSE D
-</code></pre></div>
-
+IF Y : TR.PULSE D</code></pre></div>
 <p><code>PATTERN:</code> each column contains the <em>fill</em> in the first row, the <em>length</em> in the second and the <em>rotation</em> in the third for the four sequences</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>0|   4   6   4   9
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">0|   4   6   4   9
 1|  16  16  16  16
 2|   0   2   2   0
 3|   .   .   .   .
 4|   .   .   .   .
 .|
 .|
-.|
-</code></pre></div>
-
+.|</code></pre></div>
 <p>Start your clock and play around with the values on the <em>pattern tracker</em> (you can use the <code>[</code> and <code>]</code> keys to increment and decrement the value under the cursor too).</p>
 <div class="footnotes">
 
@@ -208,11 +178,11 @@ IF Y : TR.PULSE D
 
       <footer class="footer">
   <small>
-    &copy; <time datetime="2016">2016</time> &mdash; <time datetime="2017">2017</time> Sam Doshi. All rights reserved.
+    &copy; <time datetime="2016">2016</time> &mdash; <time datetime="2018">2018</time> Sam Doshi. All rights reserved.
   </small>
   <br>
   <small>
-    <a href="http://samdoshi.com/key.asc"><i class="fa fa-lock"></i> 8D92 2C3A 37A4 875B</a>
+    <a href="https://samdoshi.com/key.asc"><i class="fa fa-lock"></i> 8D92 2C3A 37A4 875B</a>
   </small>
 </footer>
 

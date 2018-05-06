@@ -7,11 +7,11 @@
 
   <title> AVR32 RAM and ROM usage &middot; Sam Doshi </title>
 
-  <link rel="stylesheet" href="http://samdoshi.com/css/styles.css">
+  <link rel="stylesheet" href="https://samdoshi.com/css/styles.css">
   <link href="https://fonts.googleapis.com/css?family=Merriweather:300,300i,400,400i,700,700i|Roboto+Mono:400,400i,700,700i|Roboto+Slab:300,400,700&amp;subset=latin-ext" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-  <link href="http://samdoshi.com/index.xml" rel="alternate" type="application/rss+xml" title="Sam Doshi" />
-  <link href="http://samdoshi.com/index.xml" rel="feed" type="application/rss+xml" title="Sam Doshi" />
+  <link href="https://samdoshi.com/index.xml" rel="alternate" type="application/rss+xml" title="Sam Doshi" />
+  <link href="https://samdoshi.com/index.xml" rel="feed" type="application/rss+xml" title="Sam Doshi" />
 </head>
 
 
@@ -21,7 +21,7 @@
 
       <header class="masthead">
   <h3 class="masthead-title">
-    <a href="http://samdoshi.com/" title="Home">Sam Doshi</a>
+    <a href="https://samdoshi.com/" title="Home">Sam Doshi</a>
     <small>personal ramblings</small>
   </h3>
   <nav class="masthead-links">
@@ -60,12 +60,10 @@
 <h2 id="output-formats">Output formats</h2>
 
 <p>Two output formats for the <code>avr32-size</code> command exist, the simpler &lsquo;Berkeley&rsquo; style, e.g. <code>avr32-size -B teletype.elf</code>:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>   text	   data	    bss	    dec	    hex	filename
-  81034	   7504	 237872	 326410	  4fb0a	teletype.elf
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">   text	   data	    bss	    dec	    hex	filename
+  81034	   7504	 237872	 326410	  4fb0a	teletype.elf</code></pre></div>
 <p>Or the more complex &lsquo;SysV&rsquo; style, e.g. <code>avr32-size -A teletype.elf</code>:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>teletype.elf  :
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">teletype.elf  :
 section               size         addr
 .reset                8204   2147483648
 .rela.got                0   2147491852
@@ -96,41 +94,33 @@ section               size         addr
 .stack                8192        90112
 .flash_nvram        147076   2147745792
 .debug_ranges        14936            0
-Total             35427649
-</code></pre></div>
-
-<p>We&rsquo;re going to use the SysV style, the Berkeley style doesn&rsquo;t include a useful value for <code>BSS</code><sup class="footnote-ref" id="fnref:fn-berkeley"><a rel="footnote" href="#fn:fn-berkeley">1</a></sup>.</p>
+Total             35427649</code></pre></div>
+<p>We&rsquo;re going to use the SysV style, the Berkeley style doesn&rsquo;t include a useful value for <code>BSS</code><sup class="footnote-ref" id="fnref:fn-berkeley"><a href="#fn:fn-berkeley">1</a></sup>.</p>
 
 <h2 id="enhancing-the-output-of-avr32-size">Enhancing the output of <code>avr32-size</code></h2>
 
 <p>Before we go further, let&rsquo;s enhance the output of <code>avr32-size</code>, firstly I would like both the decimal and hexadecimal values side by side:</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span></span>pr -w <span class="m">85</span> -m -t <span class="se">\</span>
-   &lt;<span class="o">(</span>avr32-size -Ad teletype.elf<span class="o">)</span> <span class="se">\</span>
-   &lt;<span class="o">(</span>avr32-size -Ax teletype.elf <span class="p">|</span> cut -c 19-<span class="o">)</span>
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">pr -w <span class="m">85</span> -m -t <span class="se">\
+</span><span class="se"></span>   &lt;<span class="o">(</span>avr32-size -Ad teletype.elf<span class="o">)</span> <span class="se">\
+</span><span class="se"></span>   &lt;<span class="o">(</span>avr32-size -Ax teletype.elf <span class="p">|</span> cut -c <span class="m">19</span>-<span class="o">)</span></code></pre></div>
 <p>Next, let&rsquo;s remove the <code>.debug_*</code> lines and the headers and totals:</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span></span>pr -w <span class="m">85</span> -m -t <span class="se">\</span>
-   &lt;<span class="o">(</span>avr32-size -Ad teletype.elf<span class="o">)</span> <span class="se">\</span>
-   &lt;<span class="o">(</span>avr32-size -Ax teletype.elf <span class="p">|</span> cut -c 19-<span class="o">)</span> <span class="se">\</span>
-<span class="p">|</span> grep <span class="s1">&#39;^\..*&#39;</span> <span class="se">\</span>
-<span class="p">|</span> grep -v <span class="s1">&#39;^.debug.*&#39;</span>
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">pr -w <span class="m">85</span> -m -t <span class="se">\
+</span><span class="se"></span>   &lt;<span class="o">(</span>avr32-size -Ad teletype.elf<span class="o">)</span> <span class="se">\
+</span><span class="se"></span>   &lt;<span class="o">(</span>avr32-size -Ax teletype.elf <span class="p">|</span> cut -c <span class="m">19</span>-<span class="o">)</span> <span class="se">\
+</span><span class="se"></span><span class="p">|</span> grep <span class="s1">&#39;^\..*&#39;</span> <span class="se">\
+</span><span class="se"></span><span class="p">|</span> grep -v <span class="s1">&#39;^.debug.*&#39;</span></code></pre></div>
 <p>And finally, let&rsquo;s sort by address:</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span></span>pr -w <span class="m">85</span> -m -t <span class="se">\</span>
-   &lt;<span class="o">(</span>avr32-size -Ad teletype.elf<span class="o">)</span> <span class="se">\</span>
-   &lt;<span class="o">(</span>avr32-size -Ax teletype.elf <span class="p">|</span> cut -c 19-<span class="o">)</span> <span class="se">\</span>
-<span class="p">|</span> grep <span class="s1">&#39;^\..*&#39;</span> <span class="se">\</span>
-<span class="p">|</span> grep -v <span class="s1">&#39;^.debug.*&#39;</span> <span class="se">\</span>
-<span class="p">|</span> sort -k 3
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">pr -w <span class="m">85</span> -m -t <span class="se">\
+</span><span class="se"></span>   &lt;<span class="o">(</span>avr32-size -Ad teletype.elf<span class="o">)</span> <span class="se">\
+</span><span class="se"></span>   &lt;<span class="o">(</span>avr32-size -Ax teletype.elf <span class="p">|</span> cut -c <span class="m">19</span>-<span class="o">)</span> <span class="se">\
+</span><span class="se"></span><span class="p">|</span> grep <span class="s1">&#39;^\..*&#39;</span> <span class="se">\
+</span><span class="se"></span><span class="p">|</span> grep -v <span class="s1">&#39;^.debug.*&#39;</span> <span class="se">\
+</span><span class="se"></span><span class="p">|</span> sort -k <span class="m">3</span></code></pre></div>
 <h2 id="understanding-the-output">Understanding the output</h2>
 
-<p>Let&rsquo;s take our enhanced command and run it against a built version of Teletype<sup class="footnote-ref" id="fnref:fn-commit"><a rel="footnote" href="#fn:fn-commit">2</a></sup>, we get the following output (to which I have added a header and highlighted the interesting lines).</p>
+<p>Let&rsquo;s take our enhanced command and run it against a built version of Teletype<sup class="footnote-ref" id="fnref:fn-commit"><a href="#fn:fn-commit">2</a></sup>, we get the following output (to which I have added a header and highlighted the interesting lines).</p>
 
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>Name            Size (dec)   Addr (dec)  Size (hex)   Addr (hex)
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">Name            Size (dec)   Addr (dec)  Size (hex)   Addr (hex)
 ================================================================
 .comment                47            0        0x2f          0x0
 .dalign                  4            4         0x4          0x4
@@ -138,29 +128,27 @@ Total             35427649
 .dtors                   8           16         0x8         0x10
 .jcr                     4           24         0x4         0x18
 .got                     0           28         0x0         0x1c
-<span class="hll">.data                 7484           28      0x1d3c         0x1c
+<span class="hl">.data                 7484           28      0x1d3c         0x1c
 </span>.balign                  0         7512         0x0       0x1d58
-<span class="hll">.bss                  8064         7512      0x1f80       0x1d58
-</span><span class="hll">.heap                74536        15576     0x12328       0x3cd8
-</span><span class="hll">.stack                8192        90112      0x2000      0x16000
+<span class="hl">.bss                  8064         7512      0x1f80       0x1d58
+</span><span class="hl">.heap                74536        15576     0x12328       0x3cd8
+</span><span class="hl">.stack                8192        90112      0x2000      0x16000
 </span>.reset                8204   2147483648      0x200c   0x80000000
 .rela.got                0   2147491852         0x0   0x8000200c
 .init                   26   2147491852        0x1a   0x8000200c
-<span class="hll">.text                55604   2147491880      0xd934   0x80002028
+<span class="hl">.text                55604   2147491880      0xd934   0x80002028
 </span>.exception             512   2147547648       0x200   0x8000fa00
 .fini                   24   2147548160        0x18   0x8000fc00
-<span class="hll">.rodata              16664   2147548184      0x4118   0x8000fc18
-</span><span class="hll">.flash_nvram        147076   2147745792     0x23e84   0x80040000
-</span></code></pre></div>
+<span class="hl">.rodata              16664   2147548184      0x4118   0x8000fc18
+</span><span class="hl">.flash_nvram        147076   2147745792     0x23e84   0x80040000</span></code></pre></div>
 
-
-<p>The <code>AT32UC3B0512</code><sup class="footnote-ref" id="fnref:fn-at32uc3b0512"><a rel="footnote" href="#fn:fn-at32uc3b0512">3</a></sup> used by the Teletype has 96kb of RAM and 512kb of flash ROM. The address space is unified, so a 32-bit pointer can refer to a location in RAM or in ROM. The RAM starts at location <code>0x0</code>, the ROM starts at <code>0x80000000</code>. For those MCUs that support SDRAM, that would start at <code>0xD0000000</code>.</p>
+<p>The <code>AT32UC3B0512</code><sup class="footnote-ref" id="fnref:fn-at32uc3b0512"><a href="#fn:fn-at32uc3b0512">3</a></sup> used by the Teletype has 96kb of RAM and 512kb of flash ROM. The address space is unified, so a 32-bit pointer can refer to a location in RAM or in ROM. The RAM starts at location <code>0x0</code>, the ROM starts at <code>0x80000000</code>. For those MCUs that support SDRAM, that would start at <code>0xD0000000</code>.</p>
 
 <p>The above table gives the name, size and address for each section of the unified address space, sorted by memory address. There can be gaps between sections, for example there is a gap of 180,944 bytes between the end of <code>.rodata</code> and the start of <code>.flash_nvram</code>, later on we&rsquo;ll see that there is a copy of <code>.data</code> stored there for use at initialisation.</p>
 
 <h2 id="ram">RAM</h2>
 
-<p>We aren&rsquo;t interested in all the sections in RAM, for example <code>.comment</code> contains the name of the compiler<sup class="footnote-ref" id="fnref:fn-comment"><a rel="footnote" href="#fn:fn-comment">4</a></sup> and will be striped out before the final <code>.hex</code> file is created.</p>
+<p>We aren&rsquo;t interested in all the sections in RAM, for example <code>.comment</code> contains the name of the compiler<sup class="footnote-ref" id="fnref:fn-comment"><a href="#fn:fn-comment">4</a></sup> and will be striped out before the final <code>.hex</code> file is created.</p>
 
 <p>We are interested in the following (see <a href="https://en.wikipedia.org/wiki/Data_segment">Wikipedia</a> for more info on these):</p>
 
@@ -178,7 +166,7 @@ e.g. <code>LDFLAGS = -Wl,-e,_trampoline,--defsym=__stack_size__=0x1000</code> fo
 
 <h2 id="rom">ROM</h2>
 
-<p>The ROM contains your code and any read-only data, as well as the initial value for any read-write data. It also contains the NVRAM<sup class="footnote-ref" id="fnref:fn-nvram"><a rel="footnote" href="#fn:fn-nvram">5</a></sup>, which can be read directly, but writes must go via the <a href="https://github.com/monome/libavr32/blob/ec718209606be5df516496c474df9ae82df179ee/asf/avr32/drivers/flashc/flashc.h">flash controller interface</a>.</p>
+<p>The ROM contains your code and any read-only data, as well as the initial value for any read-write data. It also contains the NVRAM<sup class="footnote-ref" id="fnref:fn-nvram"><a href="#fn:fn-nvram">5</a></sup>, which can be read directly, but writes must go via the <a href="https://github.com/monome/libavr32/blob/ec718209606be5df516496c474df9ae82df179ee/asf/avr32/drivers/flashc/flashc.h">flash controller interface</a>.</p>
 
 <dl>
 <dt><code>.text</code></dt>
@@ -222,12 +210,10 @@ AVR UC3 Devices</a>:</p>
 </blockquote>
 
 <p>We can use <code>avr32-objdump</code> to list the VMA and LMA:</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span></span>avr32-objdump -h teletype.elf
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">avr32-objdump -h teletype.elf</code></pre></div>
 <p>I have omitted the <code>.debug_*</code> sections and highlighted the <code>.data</code> and <code>.rodata</code> sections. We can see that the VMA and LMA are different for <code>.data</code>, but not for <code>.rodata</code>.</p>
 
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>teletype.elf:     file format elf32-avr32
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">teletype.elf:     file format elf32-avr32
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
@@ -243,7 +229,7 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
   5 .fini         00000018  8000fc00  8000fc00  00010000  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-<span class="hll">  6 .rodata       00004118  8000fc18  8000fc18  00010018  2**2
+<span class="hl">  6 .rodata       00004118  8000fc18  8000fc18  00010018  2**2
 </span>                  CONTENTS, ALLOC, LOAD, READONLY, DATA
   7 .dalign       00000004  00000004  00000004  00000000  2**0
                   ALLOC
@@ -255,7 +241,7 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, DATA
  11 .got          00000000  0000001c  80013d44  0001441c  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-<span class="hll"> 12 .data         00005d3c  0000001c  80013d44  0001441c  2**2
+<span class="hl"> 12 .data         00005d3c  0000001c  80013d44  0001441c  2**2
 </span>                  CONTENTS, ALLOC, LOAD, DATA
  13 .balign       00000000  00005d58  80019a80  0001a158  2**0
                   ALLOC
@@ -268,9 +254,7 @@ Idx Name          Size      VMA       LMA       File off  Algn
  26 .stack        00002000  00016000  00016000  00000000  2**0
                   ALLOC
  27 .flash_nvram  00023e84  80040000  80019a80  0001a400  2**1
-                  ALLOC
-</code></pre></div>
-
+                  ALLOC</code></pre></div>
 
 <h2 id="summary">Summary</h2>
 
@@ -315,11 +299,11 @@ and RAM Usage</a></li>
 
       <footer class="footer">
   <small>
-    &copy; <time datetime="2016">2016</time> &mdash; <time datetime="2017">2017</time> Sam Doshi. All rights reserved.
+    &copy; <time datetime="2016">2016</time> &mdash; <time datetime="2018">2018</time> Sam Doshi. All rights reserved.
   </small>
   <br>
   <small>
-    <a href="http://samdoshi.com/key.asc"><i class="fa fa-lock"></i> 8D92 2C3A 37A4 875B</a>
+    <a href="https://samdoshi.com/key.asc"><i class="fa fa-lock"></i> 8D92 2C3A 37A4 875B</a>
   </small>
 </footer>
 

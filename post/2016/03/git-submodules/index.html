@@ -7,11 +7,11 @@
 
   <title> An introduction to Git submodules &middot; Sam Doshi </title>
 
-  <link rel="stylesheet" href="http://samdoshi.com/css/styles.css">
+  <link rel="stylesheet" href="https://samdoshi.com/css/styles.css">
   <link href="https://fonts.googleapis.com/css?family=Merriweather:300,300i,400,400i,700,700i|Roboto+Mono:400,400i,700,700i|Roboto+Slab:300,400,700&amp;subset=latin-ext" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-  <link href="http://samdoshi.com/index.xml" rel="alternate" type="application/rss+xml" title="Sam Doshi" />
-  <link href="http://samdoshi.com/index.xml" rel="feed" type="application/rss+xml" title="Sam Doshi" />
+  <link href="https://samdoshi.com/index.xml" rel="alternate" type="application/rss+xml" title="Sam Doshi" />
+  <link href="https://samdoshi.com/index.xml" rel="feed" type="application/rss+xml" title="Sam Doshi" />
 </head>
 
 
@@ -21,7 +21,7 @@
 
       <header class="masthead">
   <h3 class="masthead-title">
-    <a href="http://samdoshi.com/" title="Home">Sam Doshi</a>
+    <a href="https://samdoshi.com/" title="Home">Sam Doshi</a>
     <small>personal ramblings</small>
   </h3>
   <nav class="masthead-links">
@@ -56,90 +56,70 @@
 <h2 id="setup">Setup</h2>
 
 <p>First, we&rsquo;ll make our shared library repo <code>lib</code> and add some commits.</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span></span>mkdir lib
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">mkdir lib
 <span class="nb">cd</span> lib
 git init
 touch a
 git add a
-git commit -m <span class="s2">&quot;added a&quot;</span>
+git commit -m <span class="s2">&#34;added a&#34;</span>
 git mv a b
-git commit -m <span class="s2">&quot;mv a b&quot;</span>
-<span class="nb">cd</span> ..
-</code></pre></div>
-
+git commit -m <span class="s2">&#34;mv a b&#34;</span>
+<span class="nb">cd</span> ..</code></pre></div>
 <p>Now, let&rsquo;s create a repo <code>repo1</code> (that will use the library via a submodule).</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span></span>mkdir repo1
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">mkdir repo1
 <span class="nb">cd</span> repo1
 git init
-<span class="nb">cd</span> ..
-</code></pre></div>
-
+<span class="nb">cd</span> ..</code></pre></div>
 <p>This gives us the following files (via <code>tree</code>):</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>.
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">.
 ├── lib
 │   └── b
-└── repo1
-</code></pre></div>
-
+└── repo1</code></pre></div>
 <p>Let&rsquo;s add the submodule to <code>repo1</code> as the directory <code>common</code>.</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span></span><span class="nb">cd</span> repo1
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="nb">cd</span> repo1
 git submodule add ../lib common
-git commit -m <span class="s2">&quot;added submodule&quot;</span>
-<span class="nb">cd</span> ..
-</code></pre></div>
-
+git commit -m <span class="s2">&#34;added submodule&#34;</span>
+<span class="nb">cd</span> ..</code></pre></div>
 <p>And again, the output of <code>tree</code>:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>.
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">.
 ├── lib
 │   └── b
 └── repo1
     └── common
-        └── b
-</code></pre></div>
-
+        └── b</code></pre></div>
 <p>Now we have a repo <code>repo1</code> that contains a submodule in the directory <code>common</code> from repo <code>lib</code>.</p>
 
 <h2 id="making-changes-to-lib">Making changes to <code>lib</code></h2>
 
 <p>Let&rsquo;s make a change to <code>lib</code> to demonstrate what submodules allow us to do.</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span></span><span class="nb">cd</span> lib
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="nb">cd</span> lib
 git mv b c
-git commit -m <span class="s2">&quot;mv b c&quot;</span>
-<span class="nb">cd</span> ..
-</code></pre></div>
-
+git commit -m <span class="s2">&#34;mv b c&#34;</span>
+<span class="nb">cd</span> ..</code></pre></div>
 <p>Again, consider the output of <code>tree</code>. Notice how <code>repo1/common</code> still contains <code>b</code>.</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>.
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">.
 ├── lib
 │   └── c
 └── repo1
     └── common
-        └── b
-</code></pre></div>
-
+        └── b</code></pre></div>
 <p>Let&rsquo;s clone <code>repo1</code> to <code>repo1_clone</code>.</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span></span>git clone repo1 repo1_clone
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">git clone repo1 repo1_clone</code></pre></div>
 <p>That gives us:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>.
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">.
 ├── lib
 │   └── c
 ├── repo1
 │   └── common
 │       └── b
 └── repo1_clone
-    └── common
-</code></pre></div>
-
+    └── common</code></pre></div>
 <p>Hmm, why hasn&rsquo;t <code>repo1_clone/common</code> got any files in it?</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span></span><span class="nb">cd</span> repo1_clone
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="nb">cd</span> repo1_clone
 git submodule update --init
-<span class="nb">cd</span> ..
-</code></pre></div>
-
-<p>That&rsquo;s better<sup class="footnote-ref" id="fnref:fn-recursive"><a rel="footnote" href="#fn:fn-recursive">1</a></sup>:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>.
+<span class="nb">cd</span> ..</code></pre></div>
+<p>That&rsquo;s better<sup class="footnote-ref" id="fnref:fn-recursive"><a href="#fn:fn-recursive">1</a></sup>:</p>
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">.
 ├── lib
 │   └── c
 ├── repo1
@@ -147,49 +127,37 @@ git submodule update --init
 │       └── b
 └── repo1_clone
     └── common
-        └── b
-</code></pre></div>
-
+        └── b</code></pre></div>
 <p>The important thing to note is that both <code>repo1</code> and <code>repo1_clone</code> still contain <code>b</code> rather than <code>c</code>. This is because Git tracks a particular commit for the submodule rather than a branch or <code>HEAD</code>. You need to explicitly update the parent repo to track a new commit. This is great as it means changes to the upstream repo of the submodule are not forced upon us.</p>
 
 <p>The output of <code>git log --pretty=&quot;format:%H %s&quot;</code> in the <code>lib</code> repo is:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>1e5717c64e1150ca1da08521a24d8469c2bdde00 mv b c
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">1e5717c64e1150ca1da08521a24d8469c2bdde00 mv b c
 86a5b293fa8f860730cd96c11b29b5f03fc2a60e mv a b
-3c163ca8fcf336907e1b2a121f25bd550a71e5e3 added a
-</code></pre></div>
-
+3c163ca8fcf336907e1b2a121f25bd550a71e5e3 added a</code></pre></div>
 <p>The output of <code>git submodule status</code> in <code>repo1</code> is:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>86a5b293fa8f860730cd96c11b29b5f03fc2a60e common (heads/master)
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">86a5b293fa8f860730cd96c11b29b5f03fc2a60e common (heads/master)</code></pre></div>
 <p>Notice how the commit SHA for the <code>common</code> entry in <code>git submodule status</code> matches the second entry in the log for <code>lib</code>. This shouldn&rsquo;t come as a surprise, as our submodule hasn&rsquo;t been updated to the latest changes in <code>lib</code> yet.</p>
 
 <h2 id="updating-submodules">Updating submodules</h2>
 
 <p>Let&rsquo;s update <code>repo1</code> to incorporate the changes made to <code>lib</code>.</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span></span><span class="nb">cd</span> repo1/common
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="nb">cd</span> repo1/common
 git pull
 <span class="nb">cd</span> ..
-git status
-</code></pre></div>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>On branch master
+git status</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">On branch master
 Changes not staged for commit:
-  (use &quot;git add &lt;file&gt;...&quot; to update what will be committed)
-  (use &quot;git checkout -- &lt;file&gt;...&quot; to discard changes in working directory)
+  (use &#34;git add &lt;file&gt;...&#34; to update what will be committed)
+  (use &#34;git checkout -- &lt;file&gt;...&#34; to discard changes in working directory)
 
         modified:   common (new commits)
 
-no changes added to commit (use &quot;git add&quot; and/or &quot;git commit -a&quot;)
-</code></pre></div>
-
-<p>The output of <code>git status</code> is telling us that we have modified <code>common</code>, we need to commit those changes to <code>repo1</code><sup class="footnote-ref" id="fnref:fn-change"><a rel="footnote" href="#fn:fn-change">2</a></sup>.</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span></span>git add common
-git commit -m <span class="s2">&quot;update common&quot;</span>
-<span class="nb">cd</span> ..
-</code></pre></div>
-
+no changes added to commit (use &#34;git add&#34; and/or &#34;git commit -a&#34;)</code></pre></div>
+<p>The output of <code>git status</code> is telling us that we have modified <code>common</code>, we need to commit those changes to <code>repo1</code><sup class="footnote-ref" id="fnref:fn-change"><a href="#fn:fn-change">2</a></sup>.</p>
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">git add common
+git commit -m <span class="s2">&#34;update common&#34;</span>
+<span class="nb">cd</span> ..</code></pre></div>
 <p>Now the output of <code>tree</code> is:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>.
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">.
 ├── lib
 │   └── c
 ├── repo1
@@ -197,19 +165,15 @@ git commit -m <span class="s2">&quot;update common&quot;</span>
 │       └── c
 └── repo1_clone
     └── common
-        └── b
-</code></pre></div>
-
+        └── b</code></pre></div>
 <p>The only thing left to do is to update <code>repo1_clone</code> to reflect those changes:</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span></span><span class="nb">cd</span> repo1_clone
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="nb">cd</span> repo1_clone
 git pull
-git submodule update
-</code></pre></div>
-
+git submodule update</code></pre></div>
 <p>The <code>git pull</code> updates <code>repo1_clone</code> to match <code>repo1</code>, but won&rsquo;t update the <code>common</code> directory. Assuming that <code>common</code> is clean, you can run <code>git submodule update</code> to update <code>common</code> to the correct commit of <code>lib</code>.</p>
 
 <p>The final output of <code>tree</code> is:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>.
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">.
 ├── lib
 │   └── c
 ├── repo1
@@ -217,9 +181,7 @@ git submodule update
 │       └── c
 └── repo1_clone
     └── common
-        └── c
-</code></pre></div>
-
+        └── c</code></pre></div>
 <h2 id="taking-things-further">Taking things further</h2>
 
 <p>The <code>common</code> directories in <code>repo1</code> and <code>repo1_clone</code> are normal Git repos, that are cloned from <code>lib</code>. You can do all the normal things inside them that you would in any other Git repo: <code>branch</code>, <code>checkout</code>, <code>commit</code>, <code>pull</code> and even <code>push</code>. So if the work you&rsquo;re doing on the <code>lib</code> repo is best done in the context of <code>repo1</code>, you can make your changes and commits in <code>repo1/common</code>&mdash;you just need to remember to commit the directory <code>common</code> to <code>repo1</code> when you want <code>repo1</code> to be updated to reference the new commits you&rsquo;ve made to <code>lib</code>.</p>
@@ -243,11 +205,11 @@ git submodule update
 
       <footer class="footer">
   <small>
-    &copy; <time datetime="2016">2016</time> &mdash; <time datetime="2017">2017</time> Sam Doshi. All rights reserved.
+    &copy; <time datetime="2016">2016</time> &mdash; <time datetime="2018">2018</time> Sam Doshi. All rights reserved.
   </small>
   <br>
   <small>
-    <a href="http://samdoshi.com/key.asc"><i class="fa fa-lock"></i> 8D92 2C3A 37A4 875B</a>
+    <a href="https://samdoshi.com/key.asc"><i class="fa fa-lock"></i> 8D92 2C3A 37A4 875B</a>
   </small>
 </footer>
 
