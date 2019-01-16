@@ -29,9 +29,7 @@
 &lt;p&gt;Your ROM size is approximately &lt;code&gt;.data&lt;/code&gt; + &lt;code&gt;.rodata&lt;/code&gt; + &lt;code&gt;.text&lt;/code&gt;, to which you can add your &lt;code&gt;.flash_nvram&lt;/code&gt; to get an approximation of total flash ROM use.&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;p&gt;Read on for the gory details&amp;hellip;&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+&lt;p&gt;Read on for the gory details&amp;hellip;&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -48,9 +46,7 @@
 &lt;p&gt;&lt;em&gt;&lt;a href=&#34;https://git-scm.com/docs/git-submodule&#34;&gt;The Git submodule man page&lt;/a&gt;&lt;/em&gt; &lt;em&gt;(emphasis mine)&lt;/em&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;p&gt;Let&amp;rsquo;s work through a simple example to see how it works&amp;hellip;&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+&lt;p&gt;Let&amp;rsquo;s work through a simple example to see how it works&amp;hellip;&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -62,12 +58,9 @@
       <description>&lt;p&gt;Earlier this year I did some work on a Euclidean rhythm operator for the &lt;a href=&#34;http://monome.org/docs/modular/teletype/&#34;&gt;Monome Teletype&lt;/a&gt;. Here is the &lt;a href=&#34;https://github.com/tehn/mod/pull/68&#34;&gt;pull request&lt;/a&gt;&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:fn-bugfix&#34;&gt;&lt;a href=&#34;#fn:fn-bugfix&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;, the &lt;a href=&#34;https://github.com/tehn/mod/releases/tag/v1.12&#34;&gt;beta firmware&lt;/a&gt;, and there is also a thread to discuss it on &lt;a href=&#34;http://llllllll.co/t/a-euclidean-rhythm-operator-for-the-teletype/2344?u=sam&#34;&gt;lines&lt;/a&gt;.&lt;/p&gt;
 
 &lt;div class=&#34;video-container&#34;&gt;
-    &lt;iframe class=&#34;youtube-player&#34; type=&#34;text/html&#34; width=&#34;100%&#34; height=&#34;auto&#34; src=&#34;https://www.youtube.com/embed/f2FMVaVkiDo?rel=0&amp;modestbranding=1&#34; allowfullscreen frameborder=&#34;0&#34;&gt;
+    &lt;iframe class=&#34;youtube-player&#34; type=&#34;text/html&#34; width=&#34;100%&#34; height=&#34;auto&#34; src=&#34;https://www.youtube-nocookie.com/embed/f2FMVaVkiDo?rel=0&amp;modestbranding=1&#34; allowfullscreen frameborder=&#34;0&#34;&gt;
     &lt;/iframe&gt;
-&lt;/div&gt;
-
-
-&lt;p&gt;&lt;/p&gt;</description>
+&lt;/div&gt;</description>
     </item>
     
   </channel>
